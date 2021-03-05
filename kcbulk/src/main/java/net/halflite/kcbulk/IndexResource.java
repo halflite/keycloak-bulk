@@ -16,7 +16,7 @@ public class IndexResource {
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public TemplateInstance index() {
-      return index.instance();  
+    return index.instance();
   }
 
   @Inject
