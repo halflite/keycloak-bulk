@@ -1,0 +1,39 @@
+version: '3'
+
+volumes:
+  mysql_data:
+      driver: local
+
+services:
+  mariadb:
+      image: mariadb:10.5.9
+      volumes:
+        - dbdata:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: keycloak
+        MYSQL_USER: keycloak
+        MYSQL_PASSWORD: password
+      # Copy-pasted from https://github.com/docker-library/mariadb/issues/94
+      healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "--silent"]
+
+  keycloak:
+      image: jboss/keycloak:12.0.4
+      environment:
+        DB_VENDOR: mariadb
+        DB_ADDR: mariadb
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_PASSWORD: password
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: Pa55w0rd
+        JGROUPS_DISCOVERY_PROTOCOL: JDBC_PING
+      ports:
+        - 18080:8080
+      command: ["-b 0.0.0.0", "--server-config=standalone.xml"]
+      depends_on:
+        - mariadb
+
+volumes:
+  dbdata:
